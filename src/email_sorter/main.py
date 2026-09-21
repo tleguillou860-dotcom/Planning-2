@@ -1,5 +1,5 @@
 """Daily entry point: sort unread inbox mail into Important/Pub, mark Pub as
-read, and WhatsApp a summary of the important ones.
+read, and send a Telegram summary of the important ones.
 
 Runs from GitHub Actions twice a day (06:00 and 07:00 UTC) to land on 8:00
 Europe/Paris time whether or not daylight saving is in effect; this gate
@@ -18,7 +18,7 @@ from anthropic import Anthropic
 from .classifier import classify
 from .gmail_client import GmailClient
 from .summarizer import build_summary
-from .whatsapp import send_whatsapp_summary
+from .telegram import send_telegram_summary
 
 TARGET_HOUR = 8
 TIMEZONE = "Europe/Paris"
@@ -58,14 +58,12 @@ def run() -> None:
             print(f"[important] {message.subject!r} ({result.reason})")
 
     summary = build_summary(anthropic_client, important_messages)
-    send_whatsapp_summary(
-        account_sid=os.environ["TWILIO_ACCOUNT_SID"],
-        auth_token=os.environ["TWILIO_AUTH_TOKEN"],
-        from_number=os.environ["TWILIO_WHATSAPP_FROM"],
-        to_number=os.environ["TWILIO_WHATSAPP_TO"],
+    send_telegram_summary(
+        bot_token=os.environ["TELEGRAM_BOT_TOKEN"],
+        chat_id=os.environ["TELEGRAM_CHAT_ID"],
         body=summary,
     )
-    print("Résumé envoyé sur WhatsApp.")
+    print("Résumé envoyé sur Telegram.")
 
 
 if __name__ == "__main__":

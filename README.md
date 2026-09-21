@@ -6,7 +6,7 @@ Chaque matin vers 8h (heure de Paris), un workflow GitHub Actions :
 2. les classe en **Important** ou **Pub** (règles simples + Claude pour les
    cas ambigus) et les déplace dans le label Gmail correspondant ;
 3. marque les mails **Pub** comme lus ;
-4. envoie un résumé des mails **Important** sur WhatsApp (via Twilio).
+4. envoie un résumé des mails **Important** sur Telegram.
 
 ## Mise en place (à faire une seule fois)
 
@@ -33,15 +33,20 @@ premier lancement.
    Une page de connexion Google s'ouvre ; connecte-toi avec le compte Gmail à
    surveiller. Le script affiche un **refresh token** à la fin.
 
-### 3. Créer un compte Twilio (WhatsApp)
+### 3. Créer un bot Telegram
 
-1. Crée un compte sur [twilio.com](https://www.twilio.com/).
-2. Active le **WhatsApp Sandbox** (Messaging → Try it out → Send a WhatsApp
-   message), et suis les instructions pour relier ton propre numéro WhatsApp
-   au sandbox (envoi d'un message "join ..." depuis WhatsApp).
-3. Récupère l'**Account SID**, l'**Auth Token**, le numéro WhatsApp du
-   sandbox (`from`, format `+14155238886` par défaut) et note ton propre
-   numéro WhatsApp au format international (`to`, ex. `+33612345678`).
+1. Ouvre une conversation avec [@BotFather](https://t.me/BotFather) sur
+   Telegram, envoie `/newbot` et suis les instructions (nom + nom
+   d'utilisateur du bot). BotFather te donne un **token** du type
+   `123456789:AAExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`.
+2. Démarre une conversation avec ton nouveau bot (cherche son
+   `@nom_du_bot` dans Telegram et envoie-lui n'importe quel message, par
+   exemple `/start`) — Telegram n'autorise un bot à écrire que si tu lui as
+   parlé en premier.
+3. Récupère ton **chat_id** : ouvre dans un navigateur
+   `https://api.telegram.org/bot<TOKEN>/getUpdates` (remplace `<TOKEN>` par
+   le token du bot) juste après lui avoir envoyé un message, et note la
+   valeur `"id"` dans `"chat": {"id": ...}`.
 
 ### 4. Clé API Anthropic
 
@@ -58,10 +63,8 @@ repository secret. Ajoute :
 | `GMAIL_CLIENT_SECRET` | `client_secret` du fichier `client_secret.json` |
 | `GMAIL_REFRESH_TOKEN` | Refresh token généré à l'étape 2.4 |
 | `ANTHROPIC_API_KEY` | Clé API Anthropic |
-| `TWILIO_ACCOUNT_SID` | Account SID Twilio |
-| `TWILIO_AUTH_TOKEN` | Auth Token Twilio |
-| `TWILIO_WHATSAPP_FROM` | Numéro WhatsApp Twilio (ex. `+14155238886`) |
-| `TWILIO_WHATSAPP_TO` | Ton numéro WhatsApp (ex. `+33612345678`) |
+| `TELEGRAM_BOT_TOKEN` | Token du bot donné par BotFather |
+| `TELEGRAM_CHAT_ID` | Ton chat_id récupéré via `getUpdates` |
 
 ### 6. C'est prêt
 
